@@ -41,7 +41,7 @@ const ALBUM_SCHEMA = `
 		id serial not null primary key,
 		copyright varchar(225) NOT NULL,
 		dates varchar(255) NOT NULL,
-	    explanation varchar(225) NOT NULL,
+	    explanation varchar NOT NULL,
 		hdurl varchar(225) NOT NULL,
 	    mediaType varchar(225) NOT NULL,
 		serviceVersion varchar(225) NOT NULL,

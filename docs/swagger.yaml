@@ -51,24 +51,6 @@ info:
   title: APOD Service
 paths:
   /album/:
-    get:
-      consumes:
-      - application/json
-      description: gets all albums from API
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.ListNasa'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: getAllAlbums
-      tags:
-      - images
     post:
       consumes:
       - application/json

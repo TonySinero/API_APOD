@@ -26,7 +26,7 @@ func (r *ImgPostgres) GetAll() ([]model.Nasa, error) {
 	for rows.Next() {
 		var image model.Nasa
 		if err := rows.Scan(&image.ID, &image.Copyright, &image.Date, &image.Explanation,
-			&image.Hdurl, &image.MediaType, &image.Title, &image.URL); err != nil {
+			&image.Hdurl, &image.MediaType, &image.ServiceVersion, &image.Title, &image.URL); err != nil {
 			logrus.Errorf("GetAllImage: error while scanning for image:%s", err)
 			return nil, fmt.Errorf("GetAllImage: repository error:%w", err)
 		}

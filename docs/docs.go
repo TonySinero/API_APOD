@@ -17,33 +17,6 @@ const docTemplate_swagger = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/album/": {
-            "get": {
-                "description": "gets all albums from API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "images"
-                ],
-                "summary": "getAllAlbums",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.ListNasa"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "create new albums",
                 "consumes": [

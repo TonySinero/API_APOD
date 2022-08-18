@@ -52,48 +52,6 @@ func (h *Handler) createAlbum(ctx *gin.Context) {
 	})
 }
 
-// @Summary getAllAlbums
-// @Tags images
-// @Description gets all albums from API
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} model.ListNasa
-// @Failure 500 {object} model.ErrorResponse
-// @Router /album/ [get]
-func (h *Handler) getAllAlbums(ctx *gin.Context) {
-	var URL string
-	var date string
-	var count string
-	if ctx.Query("date") != "" || ctx.Query("count") != "" {
-		date = ctx.Query("date")
-		count = ctx.Query("count")
-		URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY") + "&count=" + count + "&date=" + date
-	} else {
-		URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
-	}
-
-	resp, err := http.Get(URL)
-	if err != nil {
-		logrus.Warnf("Wrong response")
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "Something went wrong"})
-		return
-	}
-
-	defer resp.Body.Close()
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-
-	var nasaArray = []model.Nasa{}
-	err = json.Unmarshal(bodyBytes, &nasaArray)
-
-	if len(nasaArray) == 0 {
-		logrus.Warnf("Empty array:%s", err)
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "Empty array"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, &model.ListNasa{Data: nasaArray})
-}
-
 // @Summary getImagesFromDB
 // @Tags images
 // @Description gets all images from DB
