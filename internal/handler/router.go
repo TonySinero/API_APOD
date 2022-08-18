@@ -26,6 +26,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	album := router.Group("/album")
 	{
 		album.POST("/", h.createAlbum)
+		album.GET("/dt", h.getByDate)
 		album.GET("/images", h.getAlbumFromDB)
 		album.GET("/filter", h.getWithFilter)
 	}

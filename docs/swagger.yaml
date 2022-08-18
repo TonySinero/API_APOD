@@ -82,6 +82,25 @@ paths:
       summary: createPerm
       tags:
       - images
+  /album/dt:
+    get:
+      consumes:
+      - application/json
+      description: gets image by date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Nasa'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: getByDate
+      tags:
+      - images
   /album/filter:
     get:
       consumes:

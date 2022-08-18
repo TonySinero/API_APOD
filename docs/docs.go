@@ -65,6 +65,35 @@ const docTemplate_swagger = `{
                 }
             }
         },
+        "/album/dt": {
+            "get": {
+                "description": "gets image by date",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "getByDate",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Nasa"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/album/filter": {
             "get": {
                 "description": "gets all images with filter",

@@ -70,6 +70,39 @@ func (h *Handler) getAlbumFromDB(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, &model.ListNasa{Data: images})
 }
 
+// @Summary getByDate
+// @Tags images
+// @Description gets image by date
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} model.Nasa
+// @Failure 500 {object} model.ErrorResponse
+// @Router /album/dt [get]
+func (h *Handler) getByDate(ctx *gin.Context) {
+	var nasa model.Nasa
+	dateParam := ctx.Query("date")
+
+	dateUrl := fmt.Sprintf("&date=%s", dateParam)
+	var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY") + dateUrl
+	resp, err := http.Get(URL)
+	if err != nil {
+		logrus.Warnf("Wrong response")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "wrong response from API"})
+		return
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+
+	err = json.Unmarshal(bodyBytes, &nasa)
+	if err != nil {
+		logrus.Warnf("Wrong response")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "unmarshall error"})
+		return
+	}
+	ctx.JSON(http.StatusOK, nasa)
+}
+
 // @Summary getWithFilter
 // @Tags images
 // @Description gets all images with filter
