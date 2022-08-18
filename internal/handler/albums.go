@@ -27,8 +27,8 @@ func (h *Handler) createAlbum(ctx *gin.Context) {
 	var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
 	resp, err := http.Get(URL)
 	if err != nil {
-		logrus.Warnf("Wrong response")
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "something went wrong"})
+		logrus.Warnf("something went wrong")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "response error"})
 		return
 	}
 
@@ -38,8 +38,8 @@ func (h *Handler) createAlbum(ctx *gin.Context) {
 	// Convert response body to NASA struct
 	err = json.Unmarshal(bodyBytes, &nasa)
 	if err != nil {
-		logrus.Warnf("Wrong response")
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "invalid request"})
+		logrus.Warnf("something went wrong")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "convert error"})
 		return
 	}
 	Id, err := h.services.Image.CreateAlbum(&nasa)
@@ -86,7 +86,7 @@ func (h *Handler) getByDate(ctx *gin.Context) {
 	var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY") + dateUrl
 	resp, err := http.Get(URL)
 	if err != nil {
-		logrus.Warnf("Wrong response")
+		logrus.Warnf("something went wrong")
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "wrong response from API"})
 		return
 	}
@@ -96,7 +96,7 @@ func (h *Handler) getByDate(ctx *gin.Context) {
 
 	err = json.Unmarshal(bodyBytes, &nasa)
 	if err != nil {
-		logrus.Warnf("Wrong response")
+		logrus.Warnf("something went wrong")
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "unmarshall error"})
 		return
 	}

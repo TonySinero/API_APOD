@@ -17,6 +17,6 @@ func (a *ImageService) GetAlbumFromDB() ([]model.Nasa, error) {
 	return a.repo.ImageRepo.GetAll()
 }
 
-func (a *ImageService) CreateAlbum(im *model.Nasa) (int, error) {
-	return a.repo.ImageRepo.CreateAlbum(im)
+func (a *ImageService) CreateAlbum(image *model.Nasa) (int, error) {
+	return a.repo.ImageRepo.CreateAlbum(image)
 }

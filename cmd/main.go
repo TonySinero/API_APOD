@@ -54,4 +54,21 @@ func main() {
 	if err := serv.Shutdown(context.Background()); err != nil {
 		logrus.Panicf("Error occured while shutting down http server: %s", err.Error())
 	}
+
+	//done := make(chan bool, 1)
+	//ticker := time.NewTicker(1 * time.Hour)
+	//go func() {
+	//	for {
+	//		select {
+	//		case <-ticker.C:
+	//			_, err = servic.CreateAlbum()
+	//		case <-done:
+	//			return
+	//		}
+	//	}
+	//}()
+	//<-quit
+	//ticker.Stop()
+	//
+	//done <- true
 }
