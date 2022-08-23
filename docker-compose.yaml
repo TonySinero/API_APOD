@@ -8,6 +8,8 @@ services:
     environment:
       - .env
     restart: unless-stopped
+    networks:
+      - application
 
 
   postgresdb:
@@ -25,6 +27,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - application
 
 
   golang:
@@ -39,7 +43,12 @@ services:
     depends_on:
       postgresdb:
         condition: service_healthy
+    networks:
+      - application
 
+networks:
+  application:
+    driver: bridge
 
 volumes:
   database:

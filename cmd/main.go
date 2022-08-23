@@ -1,21 +1,35 @@
+// Nasa daily image API
+//
+// Documentation for Nasa daily image API
+//
+// Schemes: http
+// Host: localhost:8080
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+//  - application/json
+//
+// Produces:
+//  - application/json
+//
+// swagger:meta
+
 package main
 
 import (
 	"context"
-	"github.com/apod/internal/handler"
-	"github.com/apod/internal/repository"
-	"github.com/apod/internal/service"
-	"github.com/apod/pkg/database"
-	"github.com/apod/server"
+	"github.com/apod/handler"
+	"github.com/apod/internal/database"
+	"github.com/apod/internal/server"
+	"github.com/apod/repository"
+	"github.com/apod/service"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
 )
-
-// @title APOD Service
-// @description NASA daily imaging service
 
 func main() {
 	err := godotenv.Load(".env")
@@ -34,15 +48,15 @@ func main() {
 		logrus.Panicf("failed to initialize db:%s", err.Error())
 	}
 
-	repo := repository.NewRepository(db)
-	servic := service.NewService(repo)
-	handlers := handler.NewHandler(servic)
+	r := repository.NewRepository(db)
+	s := service.NewService(r)
+	h := handler.NewHandler(s)
 
 	port := os.Getenv("API_SERVER_PORT")
 	serv := new(server.Server)
 
 	go func() {
-		err := serv.Run(port, handlers.InitRoutes())
+		err := serv.Run(port, h.InitRoutes())
 		if err != nil {
 			logrus.Panicf("Error occured while running http server: %s", err.Error())
 		}
@@ -54,21 +68,4 @@ func main() {
 	if err := serv.Shutdown(context.Background()); err != nil {
 		logrus.Panicf("Error occured while shutting down http server: %s", err.Error())
 	}
-
-	//done := make(chan bool, 1)
-	//ticker := time.NewTicker(1 * time.Hour)
-	//go func() {
-	//	for {
-	//		select {
-	//		case <-ticker.C:
-	//			_, err = servic.CreateAlbum()
-	//		case <-done:
-	//			return
-	//		}
-	//	}
-	//}()
-	//<-quit
-	//ticker.Stop()
-	//
-	//done <- true
 }

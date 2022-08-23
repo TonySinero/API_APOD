@@ -3,10 +3,11 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/apod/internal/model"
+	"github.com/apod/model"
 	"github.com/sirupsen/logrus"
 )
 
+// ImgPostgres type represents postgres object image structure and behavior.
 type ImgPostgres struct {
 	db *sql.DB
 }
@@ -15,6 +16,7 @@ func NewImagePostgres(db *sql.DB) *ImgPostgres {
 	return &ImgPostgres{db: db}
 }
 
+// GetAll method returns objects model.Nasa from postgres database
 func (r *ImgPostgres) GetAll() ([]model.Nasa, error) {
 	var images []model.Nasa
 	query := "SELECT id, copyright, dates, explanation, hdurl, mediaType, serviceVersion, title, url FROM images"
@@ -35,6 +37,7 @@ func (r *ImgPostgres) GetAll() ([]model.Nasa, error) {
 	return images, nil
 }
 
+// CreateAlbum method saves object model.Nasa into postgres database.
 func (u *ImgPostgres) CreateAlbum(image *model.Nasa) (int, error) {
 	logrus.WithFields(logrus.Fields{
 		"Copyright":      image.Copyright,

@@ -10,8 +10,9 @@ build-image:
 start-container:
 	docker run --name service-apod-api -p 8080:8080 --env-file .env apod_api:v1
 
-swag-generate:
-	swag init -g cmd/main.go
+
+swagger:
+	swagger generate spec --scan-models --output=./swagger.yaml
 
 run:
 	go run cmd/main.go

@@ -1,24 +1,22 @@
 package handler
 
 import (
-	_ "github.com/apod/docs"
-	"github.com/apod/internal/service"
+	"github.com/apod/service"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// Handler type replies for handling gin server requests.
 type Handler struct {
 	services *service.Service
 }
 
+// NewHandler function create handler.
 func NewHandler(services *service.Service) *Handler {
 	return &Handler{services: services}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Use(
 		h.CorsMiddleware,
 	)

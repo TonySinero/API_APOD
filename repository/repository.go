@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/apod/internal/model"
+	"github.com/apod/model"
 )
 
 //go:generate mockgen -source=repository.go -destination=mocks/repository_mock.go

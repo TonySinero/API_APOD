@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/apod/internal/model"
+	"github.com/apod/model"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -12,19 +12,20 @@ import (
 	"strings"
 )
 
-// @Summary createPerm
-// @Tags images
-// @Description create new albums
-// @Accept  json
-// @Produce  json
-// @Param input body model.Nasa true "NASA"
-// @Success 201 {object} map[string]int
-// @Failure 400 {object} model.ErrorResponse
-// @Failure 500 {object} model.ErrorResponse
-// @Router /album/ [post]
+var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
+
+//	swagger:route POST /album/ album createAlbum
+//
+//	Create album
+//
+//	Creates a new album.
+//
+//	responses:
+//	 201: map[string]int
+//	 400: model.ErrorResponse
+//	 500: model.ErrorResponse
 func (h *Handler) createAlbum(ctx *gin.Context) {
 	var nasa model.Nasa
-	var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
 	resp, err := http.Get(URL)
 	if err != nil {
 		logrus.Warnf("something went wrong")
@@ -52,14 +53,16 @@ func (h *Handler) createAlbum(ctx *gin.Context) {
 	})
 }
 
-// @Summary getImagesFromDB
-// @Tags images
-// @Description gets all images from DB
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} model.ListNasa
-// @Failure 500 {object} model.ErrorResponse
-// @Router /album/images [get]
+//	swagger:route GET /album/images album getAlbumFromDB
+//
+//	Get album from database.
+//
+//	Returns an albums.
+//
+//	responses:
+//	 200: model.ListNasa
+//	 401: model.ErrorResponse
+//	 500: model.ErrorResponse
 func (h *Handler) getAlbumFromDB(ctx *gin.Context) {
 	images, err := h.services.Image.GetAlbumFromDB()
 	if err != nil {
@@ -70,21 +73,22 @@ func (h *Handler) getAlbumFromDB(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, &model.ListNasa{Data: images})
 }
 
-// @Summary getByDate
-// @Tags images
-// @Description gets image by date
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} model.Nasa
-// @Failure 500 {object} model.ErrorResponse
-// @Router /album/dt [get]
+//	swagger:route GET /album/dt album getByDate
+//
+//	Get album by date.
+//
+//	Returns an album with the given date.
+//
+//	responses:
+//	 200: model.Nasa
+//	 401: model.ErrorResponse
+//	 500: model.ErrorResponse
 func (h *Handler) getByDate(ctx *gin.Context) {
 	var nasa model.Nasa
 	dateParam := ctx.Query("date")
-
 	dateUrl := fmt.Sprintf("&date=%s", dateParam)
-	var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY") + dateUrl
-	resp, err := http.Get(URL)
+	Url2 := URL + dateUrl
+	resp, err := http.Get(Url2)
 	if err != nil {
 		logrus.Warnf("something went wrong")
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "wrong response from API"})
@@ -103,19 +107,19 @@ func (h *Handler) getByDate(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, nasa)
 }
 
-// @Summary getWithFilter
-// @Tags images
-// @Description gets all images with filter
-// @Accept  json
-// @Produce  json
-// @Param input body model.ApodQueryInput true "Filter"
-// @Success 200 {object} model.ListNasa
-// @Failure 500 {object} model.ErrorResponse
-// @Router /album/filter [get]
+//	swagger:route GET /album/filter album getWithFilter
+//
+//	Get album by filter.
+//
+//	Returns an albums with the given filter.
+//
+//	responses:
+//	 200: model.ListNasa
+//	 401: model.ErrorResponse
+//	 500: model.ErrorResponse
 func (h *Handler) getWithFilter(ctx *gin.Context) {
 	var queryOutput []model.Nasa
 	var queryInput model.ApodQueryInput
-	URL := os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
 	queryUrl := fmt.Sprintf("%s&thumbs=%t", URL, queryInput.Thumbs)
 
 	if queryInput.Count != 0 {
