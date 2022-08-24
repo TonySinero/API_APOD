@@ -1,0 +1,170 @@
+definitions:
+  ApodQueryInput:
+    description: ApodQueryInput struct represents mandatory model filter information
+      for request
+    properties:
+      count:
+        description: The count of a nasa filter model
+        example: 8
+        format: int64
+        type: integer
+        x-go-name: Count
+      date:
+        description: The date of a nasa filter model
+        example: "2022-08-18"
+        format: date-time
+        type: string
+        x-go-name: Date
+      end_date:
+        description: The end_date of a nasa filter model
+        example: "2022-08-18"
+        format: date-time
+        type: string
+        x-go-name: EndDate
+      start_date:
+        description: The start_date of a nasa filter model
+        example: "2022-08-18"
+        format: date-time
+        type: string
+        x-go-name: StartDate
+      thumbs:
+        description: The thumbs of a nasa filter model
+        example: true
+        type: boolean
+        x-go-name: Thumbs
+    required:
+    - date
+    - start_date
+    - end_date
+    - count
+    - thumbs
+    type: object
+    x-go-package: github.com/apod/model
+  ListNasa:
+    description: ListNasa struct represents a list of data
+    properties:
+      Data:
+        items:
+          $ref: '#/definitions/Nasa'
+        type: array
+    type: object
+    x-go-package: github.com/apod/model
+  Nasa:
+    description: Nasa struct represents mandatory form information for creation
+    properties:
+      copyright:
+        description: The copyright of a nasa model
+        example: some name
+        type: string
+        x-go-name: Copyright
+      date:
+        description: The date of a nasa model
+        example: "2022-08-18"
+        type: string
+        x-go-name: Date
+      explanation:
+        description: The explanation of a nasa model
+        example: some text
+        type: string
+        x-go-name: Explanation
+      hdurl:
+        description: The hdurl of a nasa model
+        example: https://apod.nasa.gov/apod/image/2208/perseids2022jcc2k.jpg
+        type: string
+        x-go-name: Hdurl
+      id:
+        description: The id of a nasa model
+        example: 1
+        format: int64
+        type: integer
+        x-go-name: ID
+      media_type:
+        description: The media_type of a nasa model
+        example: image
+        type: string
+        x-go-name: MediaType
+      service_version:
+        description: The service_version of a nasa model
+        example: v1
+        type: string
+        x-go-name: ServiceVersion
+      title:
+        description: The title of a nasa model
+        example: some text
+        type: string
+        x-go-name: Title
+      url:
+        description: The url of a nasa model
+        example: https://apod.nasa.gov/apod/image/2208/perseids2022jcc2k800.jpg
+        type: string
+        x-go-name: URL
+    required:
+    - copyright
+    - date
+    - explanation
+    - hdurl
+    - media_type
+    - service_version
+    - title
+    - url
+    type: object
+    x-go-package: github.com/apod/model
+info: {}
+paths:
+  /album/:
+    post:
+      description: Creates a new album.
+      operationId: createAlbum
+      responses:
+        "201":
+          $ref: '#/responses/map[string]int'
+        "400":
+          $ref: '#/responses/model.ErrorResponse'
+        "500":
+          $ref: '#/responses/model.ErrorResponse'
+      summary: Create album
+      tags:
+      - album
+  /album/dt:
+    get:
+      description: Returns an album with the given date.
+      operationId: getByDate
+      responses:
+        "200":
+          $ref: '#/responses/model.Nasa'
+        "401":
+          $ref: '#/responses/model.ErrorResponse'
+        "500":
+          $ref: '#/responses/model.ErrorResponse'
+      summary: Get album by date.
+      tags:
+      - album
+  /album/filter:
+    get:
+      description: Returns an albums with the given filter.
+      operationId: getWithFilter
+      responses:
+        "200":
+          $ref: '#/responses/model.ListNasa'
+        "401":
+          $ref: '#/responses/model.ErrorResponse'
+        "500":
+          $ref: '#/responses/model.ErrorResponse'
+      summary: Get album by filter.
+      tags:
+      - album
+  /album/images:
+    get:
+      description: Returns an albums.
+      operationId: getAlbumFromDB
+      responses:
+        "200":
+          $ref: '#/responses/model.ListNasa'
+        "401":
+          $ref: '#/responses/model.ErrorResponse'
+        "500":
+          $ref: '#/responses/model.ErrorResponse'
+      summary: Get album from database.
+      tags:
+      - album
+swagger: "2.0"

@@ -1,18 +1,16 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/apod/model"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
-	"strings"
 )
-
-var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
 
 //	swagger:route POST /album/ album createAlbum
 //
@@ -26,21 +24,29 @@ var URL = os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY")
 //	 500: model.ErrorResponse
 func (h *Handler) createAlbum(ctx *gin.Context) {
 	var nasa model.Nasa
-	resp, err := http.Get(URL)
+	resp, err := http.Get(os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY"))
 	if err != nil {
 		logrus.Warnf("something went wrong")
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "response error"})
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "http response error"})
 		return
 	}
 
 	defer resp.Body.Close()
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 
-	// Convert response body to NASA struct
-	err = json.Unmarshal(bodyBytes, &nasa)
+	buf := bytes.NewBuffer(nil)
+
+	_, err = io.Copy(buf, resp.Body)
 	if err != nil {
 		logrus.Warnf("something went wrong")
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "convert error"})
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "io.copy error"})
+		return
+	}
+
+	// Convert response body to NASA struct
+	err = json.Unmarshal(buf.Bytes(), &nasa)
+	if err != nil {
+		logrus.Warnf("something went wrong")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "unmarshal error"})
 		return
 	}
 	Id, err := h.services.Image.CreateAlbum(&nasa)
@@ -87,7 +93,7 @@ func (h *Handler) getByDate(ctx *gin.Context) {
 	var nasa model.Nasa
 	dateParam := ctx.Query("date")
 	dateUrl := fmt.Sprintf("&date=%s", dateParam)
-	Url2 := URL + dateUrl
+	Url2 := os.Getenv("APOD_API_URL") + os.Getenv("APOD_API_KEY") + dateUrl
 	resp, err := http.Get(Url2)
 	if err != nil {
 		logrus.Warnf("something went wrong")
@@ -96,9 +102,17 @@ func (h *Handler) getByDate(ctx *gin.Context) {
 	}
 
 	defer resp.Body.Close()
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 
-	err = json.Unmarshal(bodyBytes, &nasa)
+	buf := bytes.NewBuffer(nil)
+
+	_, err = io.Copy(buf, resp.Body)
+	if err != nil {
+		logrus.Warnf("something went wrong")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "io.copy error"})
+		return
+	}
+
+	err = json.Unmarshal(buf.Bytes(), &nasa)
 	if err != nil {
 		logrus.Warnf("something went wrong")
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "unmarshall error"})
@@ -120,7 +134,7 @@ func (h *Handler) getByDate(ctx *gin.Context) {
 func (h *Handler) getWithFilter(ctx *gin.Context) {
 	var queryOutput []model.Nasa
 	var queryInput model.ApodQueryInput
-	queryUrl := fmt.Sprintf("%s&thumbs=%t", URL, queryInput.Thumbs)
+	queryUrl := fmt.Sprintf("%s&thumbs=%t", os.Getenv("APOD_API_URL")+os.Getenv("APOD_API_KEY"), queryInput.Thumbs)
 
 	if queryInput.Count != 0 {
 		if !queryInput.Date.IsZero() || !queryInput.StartDate.IsZero() || !queryInput.EndDate.IsZero() {
@@ -163,21 +177,21 @@ func (h *Handler) getWithFilter(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "something went wrong"})
 		return
 	}
+	buf := bytes.NewBuffer(nil)
 
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	if strings.Contains(string(body), "You have exceeded your rate limit.") {
-		logrus.Warnf("Error:%s", fmt.Errorf("you have exceeded your rate limit"))
-		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "something went wrong"})
+	_, err = io.Copy(buf, resp.Body)
+	if err != nil {
+		logrus.Warnf("something went wrong")
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "io.copy error"})
 		return
 	}
 
 	if !queryInput.Date.IsZero() {
 		var outputSingle model.Nasa
-		err = json.Unmarshal(body, &outputSingle)
+		err = json.Unmarshal(buf.Bytes(), &outputSingle)
 		queryOutput = append(queryOutput, outputSingle)
 	} else {
-		err = json.Unmarshal(body, &queryOutput)
+		err = json.Unmarshal(buf.Bytes(), &queryOutput)
 	}
 
 	ctx.JSON(http.StatusOK, &model.ListNasa{Data: queryOutput})
