@@ -76,7 +76,7 @@ func (h *Handler) getAlbumFromDB(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, &model.ListNasa{Data: images})
+	ctx.JSON(http.StatusOK, images)
 }
 
 //	swagger:route GET /album/dt album getByDate
